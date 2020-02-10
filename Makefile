@@ -16,6 +16,9 @@ dev:
 	$(DEV_BUILD) -o ela-cli cmd/ela-cli.go
 	$(BUILD) -o ela-dns elanet/dns/main/main.go
 
+pic:
+	$(DEV_BUILD) -o filetobase58 picturetobase58/main.go
+
 linux:
 	GOARCH=amd64 GOOS=linux $(BUILD) -o ela log.go  main.go
 	GOARCH=amd64 GOOS=linux $(BUILD) -o ela-cli cmd/ela-cli.go
