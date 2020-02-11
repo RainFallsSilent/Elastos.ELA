@@ -33,7 +33,7 @@ type State struct {
 	StateKeyFrame
 	manager *ProposalManager
 
-	getHistoryMember func(code []byte) *CRMember
+	getHistoryMember func(code []byte) []*CRMember
 	getTxReference   func(tx *types.Transaction) (
 		map[*types.Input]*types.Output, error)
 
@@ -47,7 +47,7 @@ func (s *State) SetManager(manager *ProposalManager) {
 }
 
 type FunctionsConfig struct {
-	GetHistoryMember func(code []byte) *CRMember
+	GetHistoryMember func(code []byte) []*CRMember
 	GetTxReference   func(tx *types.Transaction) (
 		map[*types.Input]*types.Output, error)
 }
@@ -337,8 +337,10 @@ func (s *State) returnDeposit(tx *types.Transaction, height uint32) {
 				}
 			}
 		}
-		if member := s.getHistoryMember(program.Code); member != nil {
-			returnMemberAction(member, member.MemberState)
+		if members := s.getHistoryMember(program.Code); len(members) != 0 {
+			for _, m := range members {
+				returnMemberAction(m, m.MemberState)
+			}
 		}
 		updateAmountAction(*did)
 	}
