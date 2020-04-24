@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"net"
+	"time"
 
 	"github.com/elastos/Elastos.ELA/common"
 )
@@ -17,6 +19,14 @@ const (
 	// MaxMessagePayload is the maximum bytes a message can be regardless of other
 	// individual limits imposed by messages themselves.
 	MaxMessagePayload = 1024 * 1024 * 32 // 32MB
+
+	// WriteMessageTimeOut is the max time of write message, then the peer will
+	// disconnect.
+	WriteMessageTimeOut = 10 * time.Minute
+
+	// WriteMessageTimeOut is the max time of read message, then the peer will
+	// disconnect.
+	ReadMessageTimeOut = 10 * time.Minute
 )
 
 const (
@@ -64,7 +74,14 @@ type MakeEmptyMessage func(command string) (Message, error)
 
 // ReadMessage reads, validates, and parse the Message from r for the
 // provided magic.
-func ReadMessage(r io.Reader, magic uint32, makeEmptyMessage MakeEmptyMessage) (Message, error) {
+func ReadMessage(r net.Conn, magic uint32, timeout time.Duration,
+	makeEmptyMessage MakeEmptyMessage) (Message, error) {
+	// Set read deadline
+	err := r.SetReadDeadline(time.Now().Add(timeout))
+	if err != nil {
+		return nil, fmt.Errorf("set read deadline failed %s", err.Error())
+	}
+
 	// Read message header
 	var headerBytes [HeaderSize]byte
 	if _, err := io.ReadFull(r, headerBytes[:]); err != nil {
@@ -115,7 +132,7 @@ func ReadMessage(r io.Reader, magic uint32, makeEmptyMessage MakeEmptyMessage) (
 
 // WriteMessage writes a Message to w including the necessary header
 // information.
-func WriteMessage(w io.Writer, magic uint32, msg Message) error {
+func WriteMessage(w net.Conn, magic uint32, msg Message, timeout time.Duration) error {
 	// Serialize message
 	buf := new(bytes.Buffer)
 	if err := msg.Serialize(buf); err != nil {
@@ -132,6 +149,12 @@ func WriteMessage(w io.Writer, magic uint32, msg Message) error {
 	hdr, err := BuildHeader(magic, msg.CMD(), payload).Serialize()
 	if err != nil {
 		return fmt.Errorf("serialize message header failed %s", err.Error())
+	}
+
+	// Set write deadline
+	err = w.SetWriteDeadline(time.Now().Add(timeout))
+	if err != nil {
+		return fmt.Errorf("set write deadline failed %s", err.Error())
 	}
 
 	// Write header

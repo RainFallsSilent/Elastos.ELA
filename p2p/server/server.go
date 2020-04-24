@@ -893,6 +893,44 @@ func (s *server) BanPeer(sp *serverPeer) {
 	s.peerQueue <- banPeerMsg(sp)
 }
 
+// checkAddr check and remove invalid address in address manager.
+func (s *server) checkAddr(addr string) error {
+	makeEmptyMessage := func(cmd string) (p2p.Message, error) {
+		var message p2p.Message
+		switch cmd {
+		case p2p.CmdVersion:
+			message = &msg.Version{}
+
+		default:
+			return nil, errors.New("invalid message")
+		}
+		return message, nil
+	}
+
+	conn, err := net.DialTimeout("tcp", addr, time.Second)
+	if err != nil {
+		return err
+	}
+	versionMsg := msg.NewVersion(s.cfg.ProtocolVersion, s.cfg.DefaultPort,
+		s.cfg.Services, uint64(rand.Int63()), s.cfg.BestHeight(), s.cfg.DisableRelayTx)
+
+	err = p2p.WriteMessage(
+		conn, s.cfg.MagicNumber, versionMsg, time.Second*2)
+	if err != nil {
+		return err
+	}
+	remoteMsg, err := p2p.ReadMessage(
+		conn, s.cfg.MagicNumber, time.Second*2, makeEmptyMessage)
+	if err != nil {
+		return err
+	}
+	_, ok := remoteMsg.(*msg.Version)
+	if !ok {
+		return errors.New("invalid message")
+	}
+	return nil
+}
+
 // BroadcastMessage sends msg to all peers currently connected to the server
 // except those in the passed peers to exclude.
 func (s *server) BroadcastMessage(msg p2p.Message, exclPeers ...*serverPeer) {
@@ -953,6 +991,7 @@ func (s *server) Stop() error {
 
 	// Signal the remaining goroutines to quit.
 	close(s.quit)
+	s.WaitForShutdown()
 	return nil
 }
 
@@ -1245,6 +1284,7 @@ func newServer(origCfg *Config) (*server, error) {
 		quit:        make(chan struct{}),
 		nat:         nat,
 	}
+	s.addrManager.SetCheckAddr(s.checkAddr)
 
 	// Create the DNS seeds provider.
 	seeds := newSeed(&cfg, amgr, s.OutboundGroupCount)

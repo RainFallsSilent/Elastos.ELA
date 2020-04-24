@@ -44,11 +44,11 @@ func mockService(port int) (chan net.Conn, error) {
 // sendVersion write a version message to the connection.
 func sendVersion(conn net.Conn, magic int, pid, target [33]byte, port int) error {
 	v := msg.Version{PID: pid, Target: PIDTo16(target), Port: uint16(port)}
-	return p2p.WriteMessage(conn, uint32(magic), &v)
+	return p2p.WriteMessage(conn, uint32(magic), &v, p2p.WriteMessageTimeOut)
 }
 
 func readVersion(conn net.Conn, magic int, pid, target [33]byte, port int) error {
-	m, err := p2p.ReadMessage(conn, uint32(magic),
+	m, err := p2p.ReadMessage(conn, uint32(magic), p2p.ReadMessageTimeOut,
 		func(cmd string) (m p2p.Message, e error) {
 			if cmd != msg.CmdVersion {
 				return nil, fmt.Errorf("not a version message")

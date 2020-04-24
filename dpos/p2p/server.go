@@ -750,6 +750,7 @@ func (s *server) Stop() error {
 
 	// Signal the remaining goroutines to quit.
 	close(s.quit)
+	s.WaitForShutdown()
 	return nil
 }
 

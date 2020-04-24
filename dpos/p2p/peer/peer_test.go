@@ -330,9 +330,10 @@ func TestUnsupportedVersionPeer(t *testing.T) {
 	invalidVersionMsg := msg.NewVersion(peerCfg.PID, target, nonce, 8333)
 
 	err = p2p.WriteMessage(
-		remoteConn.Writer,
+		remoteConn,
 		peerCfg.Magic,
 		invalidVersionMsg,
+		p2p.WriteMessageTimeOut,
 	)
 	if err != nil {
 		t.Fatalf("p2p.WriteMessageN: unexpected err - %v\n", err)
