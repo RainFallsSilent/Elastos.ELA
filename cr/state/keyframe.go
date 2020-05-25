@@ -1291,7 +1291,7 @@ func getElectedCRMembers(src map[common.Uint168]*CRMember) []*CRMember {
 func getImpeachableCRMembers(src map[common.Uint168]*CRMember) []*CRMember {
 	dst := make([]*CRMember, 0)
 	for _, v := range src {
-		if v.MemberState == MemberElected || v.MemberState == MemberImpeached {
+		if v.MemberState == MemberElected {
 			m := *v
 			dst = append(dst, &m)
 		}
