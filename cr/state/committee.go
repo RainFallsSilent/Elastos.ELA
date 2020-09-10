@@ -818,8 +818,12 @@ func (c *Committee) processCRDPOSManagement(tx *types.Transaction,
 	dposManagementPayload := tx.Payload.(*payload.CRDPOSManagement)
 	cr := c.getMember(dposManagementPayload.CRCommitteeDID)
 	if cr == nil {
+		log.Info("##### height:", height, "claim dpos node error. pk:",
+			common.BytesToHexString(dposManagementPayload.CRManagementPublicKey))
 		return
 	}
+	log.Info("##### height:", height, "claim dpos node cr:", cr.Info.NickName, "pk:",
+		common.BytesToHexString(dposManagementPayload.CRManagementPublicKey))
 	oriPublicKey := cr.DPOSPublicKey
 	oriMemberState := cr.MemberState
 	history.Append(height, func() {
@@ -827,6 +831,8 @@ func (c *Committee) processCRDPOSManagement(tx *types.Transaction,
 		if cr.MemberState == MemberInactive {
 			cr.MemberState = MemberElected
 		}
+		log.Info("##### height:", height, "claim dpos node finished cr:", cr.Info.NickName, "pk:",
+			common.BytesToHexString(cr.DPOSPublicKey))
 	}, func() {
 		cr.DPOSPublicKey = oriPublicKey
 		cr.MemberState = oriMemberState

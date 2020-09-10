@@ -757,9 +757,7 @@ func (a *arbitrators) GetArbitrators() []*ArbiterInfo {
 		abt, ok := v.(*crcArbiter)
 		if ok {
 			isCRMember = true
-			if !abt.isNormal {
-				isNormal = false
-			}
+			isNormal = abt.isNormal
 			if abt.crMember.DPOSPublicKey != nil {
 				claimedDPOSNode = true
 			}

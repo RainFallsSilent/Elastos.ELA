@@ -1590,7 +1590,22 @@ func (s *State) countArbitratorsInactivityV1(height uint32,
 	// is not current arbiter any more, or just becoming current arbiter; and
 	// false means producer is arbiter in both heights and not on duty.
 	changingArbiters := make(map[string]bool)
-	for _, a := range s.getArbiters() {
+	arbiters := s.getArbiters()
+	if height > 16076 && height < 16080 {
+		log.Info("###########################")
+		log.Info("### height:", height, "arbiters nodePublicKey:")
+		for i, a := range arbiters {
+			log.Info("####",i, common.BytesToHexString(a.NodePublicKey))
+		}
+		log.Info("###########################")
+	}
+
+	for _, a := range arbiters {
+		if common.BytesToHexString(a.NodePublicKey) ==
+			"039ef6c3d3e6c18c67aa077658bf709a1645f6f22d37517a82f63b47702982fae1" {
+			log.Info("### height:", height, "cr_537xx IsNormal:", a.IsNormal,
+				"isCRMember:", a.IsCRMember, "isClaimed:", a.ClaimedDPOSNode)
+		}
 		if !a.IsNormal || (a.IsCRMember && !a.ClaimedDPOSNode) {
 			continue
 		}
@@ -1608,6 +1623,9 @@ func (s *State) countArbitratorsInactivityV1(height uint32,
 		if s.isInElectionPeriod != nil && s.isInElectionPeriod() {
 			if cr, ok := crMembersMap[k]; ok {
 				if cr.MemberState != state.MemberElected {
+					if cr.Info.NickName == "cr_537xx" {
+						log.Info("### height:", height, "cr_537xx != MemberElected")
+					}
 					continue
 				}
 				oriState := cr.MemberState
