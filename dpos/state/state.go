@@ -1687,7 +1687,9 @@ func (s *State) tryUpdateCRMemberInactivity(crMember *state.CRMember,
 	needReset bool, height uint32) {
 	if needReset {
 		crMember.InactiveCountingHeight = 0
-		log.Info("@@@ at height", height, crMember.Info.NickName, "inactive reset")
+		if crMember.Info.NickName == "cr_537xx" {
+			log.Info("@@@ at height", height, crMember.Info.NickName, "inactive reset")
+		}
 		return
 	}
 
