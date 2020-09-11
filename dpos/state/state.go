@@ -1365,12 +1365,22 @@ func (s *State) updateVersion(tx *types.Transaction, height uint32) {
 	})
 }
 
-func (s *State) getClaimedCRMembersMap() map[string]*state.CRMember {
+func (s *State) getClaimedCRMembersMap(height uint32) map[string]*state.CRMember {
 	crMembersMap := make(map[string]*state.CRMember)
 	if s.getCRMembers == nil {
 		return crMembersMap
 	}
+
 	crMembers := s.getCRMembers()
+	if (height >= 16112 && height < 16115) || (height >= 16076 && height < 16078) {
+		log.Info("##########################################")
+		log.Info("############getClaimedCRMembersMap")
+		for _, m := range crMembers {
+			log.Info("######## member:", m.Info.NickName, m.MemberState.String(), common.BytesToHexString(m.DPOSPublicKey))
+		}
+		log.Info("##########################################")
+	}
+
 	for _, m := range crMembers {
 		if m.DPOSPublicKey != nil {
 			crMembersMap[hex.EncodeToString(m.Info.Code[1:len(m.Info.Code)-1])] = m
@@ -1461,7 +1471,7 @@ func (s *State) processIllegalEvidence(payloadData types.Payload,
 		return
 	}
 
-	crMembersMap := s.getClaimedCRMembersMap()
+	crMembersMap := s.getClaimedCRMembersMap(0)
 	// Set illegal producers to FoundBad state
 	for _, pk := range illegalProducers {
 		key, ok := s.NodeOwnerKeys[hex.EncodeToString(pk)]
@@ -1595,7 +1605,7 @@ func (s *State) countArbitratorsInactivityV1(height uint32,
 		log.Info("###########################")
 		log.Info("### height:", height, "arbiters nodePublicKey:")
 		for i, a := range arbiters {
-			log.Info("####",i, common.BytesToHexString(a.NodePublicKey))
+			log.Info("####", i, common.BytesToHexString(a.NodePublicKey))
 		}
 		log.Info("###########################")
 	}
@@ -1611,10 +1621,25 @@ func (s *State) countArbitratorsInactivityV1(height uint32,
 		}
 		key := s.getProducerKey(a.NodePublicKey)
 		changingArbiters[key] = false
+
+		if common.BytesToHexString(a.NodePublicKey) ==
+			"039ef6c3d3e6c18c67aa077658bf709a1645f6f22d37517a82f63b47702982fae1" {
+			log.Info("### height:", height, "cr_537xx key:", key)
+		}
 	}
 	changingArbiters[s.getProducerKey(confirm.Proposal.Sponsor)] = true
 
-	crMembersMap := s.getClaimedCRMembersMap()
+	crMembersMap := s.getClaimedCRMembersMap(height)
+
+	if (height >= 16112 && height < 16115) || (height >= 16076 && height < 16078) {
+		log.Info("########################################")
+		log.Info("######crMembersMap")
+		for k, v := range crMembersMap {
+			log.Info("### k:", k, "v:", v.Info.NickName, common.BytesToHexString(v.DPOSPublicKey))
+		}
+		log.Info("########################################")
+	}
+
 	// CRC producers are not in the ActivityProducers,
 	// so they will not be inactive
 	for k, v := range changingArbiters {
