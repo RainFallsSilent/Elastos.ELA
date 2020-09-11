@@ -1327,12 +1327,16 @@ func (s *State) processCRDPOSManagement(tx *types.Transaction, height uint32) {
 
 	ownerPublicKey := s.getCRMembersOwnerPublicKey(dposManagementPayload.CRCommitteeDID)
 	if ownerPublicKey == nil {
+		addr, _ := dposManagementPayload.CRCommitteeDID.ToAddress()
+		log.Error("@@@@@@@@@@@@@@ processCRDPOSManagement not found owner, CR did:", addr)
 		return
 	}
 	strOwnerPubkey := common.BytesToHexString(ownerPublicKey)
 	strOldNodePublicKey := s.getNodePublicKeyStr(strOwnerPubkey)
 
 	s.history.Append(height, func() {
+		log.Info("@@@@@@@@@@@ processCRDPOSManagement height:",
+			height, "Node:", strNewNodePublicKey, "owner:", strOwnerPubkey, "old node:", strOldNodePublicKey)
 		s.NodeOwnerKeys[strNewNodePublicKey] = strOwnerPubkey
 		if strOldNodePublicKey != "" {
 			delete(s.NodeOwnerKeys, strOldNodePublicKey)
@@ -1645,12 +1649,16 @@ func (s *State) countArbitratorsInactivityV1(height uint32,
 	for k, v := range changingArbiters {
 		needReset := v // avoiding pass iterator to closure
 
-		if s.isInElectionPeriod != nil && s.isInElectionPeriod() {
+		var isInElection bool
+		if s.isInElectionPeriod != nil {
+			isInElection = s.isInElectionPeriod()
+		}
+		if isInElection {
 			if cr, ok := crMembersMap[k]; ok {
+				if cr.Info.NickName == "cr_537xx" {
+					log.Info("### height:", height, "cr_537xx != MemberElected", "cr state:", cr.MemberState)
+				}
 				if cr.MemberState != state.MemberElected {
-					if cr.Info.NickName == "cr_537xx" {
-						log.Info("### height:", height, "cr_537xx != MemberElected")
-					}
 					continue
 				}
 				oriState := cr.MemberState

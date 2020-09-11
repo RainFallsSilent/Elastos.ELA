@@ -8,6 +8,7 @@ package state
 import (
 	"bytes"
 	"errors"
+	"github.com/elastos/Elastos.ELA/events"
 	"math"
 	"sort"
 	"strconv"
@@ -18,7 +19,6 @@ import (
 	"github.com/elastos/Elastos.ELA/core/types"
 	"github.com/elastos/Elastos.ELA/core/types/payload"
 	elaerr "github.com/elastos/Elastos.ELA/errors"
-	"github.com/elastos/Elastos.ELA/events"
 	"github.com/elastos/Elastos.ELA/p2p"
 	"github.com/elastos/Elastos.ELA/p2p/msg"
 	"github.com/elastos/Elastos.ELA/utils"
@@ -303,9 +303,9 @@ func (c *Committee) updateCandidatesDepositCoin(height uint32) {
 
 func (c *Committee) ProcessBlock(block *types.Block, confirm *payload.Confirm) {
 	c.mtx.Lock()
-	defer c.mtx.Unlock()
 
 	if block.Height < c.params.CRVotingStartHeight {
+		c.mtx.Unlock()
 		return
 	}
 
@@ -340,8 +340,6 @@ func (c *Committee) ProcessBlock(block *types.Block, confirm *payload.Confirm) {
 		c.createAppropriationTransaction(block.Height)
 		c.recordCurrentStageAmount(block.Height)
 		c.appropriationHistory.Commit(block.Height)
-		go events.Notify(events.ETCRCChangeCommittee, block)
-
 	} else {
 		if c.CRAssetsAddressUTXOCount >=
 			c.params.MaxCRAssetsAddressUTXOCount+c.params.CoinbaseMaturity &&
@@ -349,7 +347,11 @@ func (c *Committee) ProcessBlock(block *types.Block, confirm *payload.Confirm) {
 			c.createRectifyCRAssetsTransaction(block.Height)
 		}
 	}
+	c.mtx.Unlock()
 
+	if needChg {
+		events.Notify(events.ETCRCChangeCommittee, block)
+	}
 }
 
 func (c *Committee) updateCRInactivePeriod(history *utils.History, height uint32) {
@@ -715,6 +717,7 @@ func (c *Committee) tryStartVotingPeriod(height uint32) (inElection bool) {
 		inElectionPeriod := c.InElectionPeriod
 		c.lastHistory.Append(height, func() {
 			c.InElectionPeriod = false
+			log.Info("@@@@@@@@@@ height:", height, "InElectionPeriod = false")
 			if c.LastVotingStartHeight == 0 {
 				c.LastVotingStartHeight = height
 			} else if !c.isInVotingPeriod(height) {
@@ -983,6 +986,7 @@ func (c *Committee) changeCommitteeMembers(height uint32) error {
 	c.lastHistory.Append(height, func() {
 		c.state.CurrentSession += 1
 		c.InElectionPeriod = true
+		log.Info("@@@@@@@@@@ height:", height, "InElectionPeriod = true")
 		c.LastCommitteeHeight = height
 	}, func() {
 		c.state.CurrentSession -= 1
