@@ -480,6 +480,15 @@ func (d *DPOSManager) OnBlockReceived(b *types.Block, confirmed bool) {
 	defer log.Info("[OnBlockReceived] end")
 	isCurArbiter := d.isCurrentArbiter()
 
+	log.Info("###########################################")
+	log.Info("############ my pubkey::", common.BytesToHexString(d.publicKey))
+	log.Info("############ isCurArbiter:", isCurArbiter)
+	currentArbiters := d.arbitrators.GetArbitrators()
+	for _, a := range currentArbiters {
+		log.Info("############## a:", common.BytesToHexString(a.NodePublicKey), "isNormal", a.IsNormal)
+	}
+	log.Info("###########################################")
+
 	if d.server.IsCurrent() && isCurArbiter {
 		d.handler.currentHandler.TryCreateRevertToDPOSTx(b.Height)
 	}
