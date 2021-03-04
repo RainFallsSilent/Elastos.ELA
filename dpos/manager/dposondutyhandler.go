@@ -81,12 +81,17 @@ func (h *DPOSOnDutyHandler) getActiveArbitersCount() int {
 	peers := h.cfg.Network.GetActivePeers()
 
 	activeArbitersCount := 0
+	log.Info("#################################")
+	log.Info("#### peers")
 	for _, p := range peers {
 		pid := p.PID()
+		log.Info("###### pk:", common.BytesToHexString(pid[:]))
 		if h.cfg.Arbitrators.IsActiveProducer(pid[:]) && h.cfg.Arbitrators.IsArbitrator(pid[:]) {
 			activeArbitersCount++
 		}
 	}
+	log.Info("#################################")
+
 	return activeArbitersCount
 }
 
@@ -113,6 +118,7 @@ func (h *DPOSOnDutyHandler) TryCreateRevertToDPOSTx(BlockHeight uint32) bool {
 			return false
 		}
 		h.cfg.Network.BroadcastMessage(&msg.Tx{Serializable: tx})
+		log.Info("[TryCreateRevertToDPOSTx] create revert to DPoS transaction:", tx)
 		return true
 	}
 	return false
