@@ -494,6 +494,7 @@ func (d *DPOSManager) OnBlockReceived(b *types.Block, confirmed bool) {
 	}
 
 	if d.arbitrators.IsInPOWMode() {
+		d.changeHeight()
 		return
 	}
 	if confirmed {
@@ -583,7 +584,7 @@ func (d *DPOSManager) OnInactiveArbitratorsAccepted(p *payload.InactiveArbitrato
 
 func (d *DPOSManager) clearRevertToDPOSData(p *payload.RevertToDPOS) {
 	d.dispatcher.RevertToDPOSTx = nil
-	log.Info("clearRevertToDPOSData finished:")
+	log.Info("clearRevertToDPOSData finished")
 
 }
 

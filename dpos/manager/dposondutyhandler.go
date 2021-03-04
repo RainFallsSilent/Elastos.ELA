@@ -80,19 +80,15 @@ func (h *DPOSOnDutyHandler) TryStartNewConsensus(b *types.Block) bool {
 func (h *DPOSOnDutyHandler) getActiveArbitersCount() int {
 	peers := h.cfg.Network.GetActivePeers()
 
-	activeArbitersCount := 0
-	log.Info("#################################")
-	log.Info("#### peers")
+	peersMap := make(map[string]struct{})
 	for _, p := range peers {
 		pid := p.PID()
-		log.Info("###### pk:", common.BytesToHexString(pid[:]))
 		if h.cfg.Arbitrators.IsActiveProducer(pid[:]) && h.cfg.Arbitrators.IsArbitrator(pid[:]) {
-			activeArbitersCount++
+			peersMap[common.BytesToHexString(pid[:])] = struct{}{}
 		}
 	}
-	log.Info("#################################")
 
-	return activeArbitersCount
+	return len(peersMap) + 1
 }
 
 func (h *DPOSOnDutyHandler) TryCreateRevertToDPOSTx(BlockHeight uint32) bool {
