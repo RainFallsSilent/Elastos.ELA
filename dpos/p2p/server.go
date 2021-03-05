@@ -1,7 +1,7 @@
 // Copyright (c) 2017-2020 The Elastos Foundation
 // Use of this source code is governed by an MIT
 // license that can be found in the LICENSE file.
-// 
+//
 
 package p2p
 
@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/elastos/Elastos.ELA/common"
 	"math/rand"
 	"net"
 	"runtime"
@@ -418,13 +419,19 @@ func (s *server) handleQuery(state *peerState, querymsg interface{}) {
 		msg.reply <- connected
 
 	case getPeersMsg:
+		log.Info("####################################")
+		log.Info("#### get peers msg")
 		peers := make([]*serverPeer, 0, state.Count())
 		state.forAllPeers(func(sp *serverPeer) {
+			pid := sp.PID()
 			if !sp.Connected() {
+				log.Info("#### not connected peer:", common.BytesToHexString(pid[:]))
 				return
 			}
 			peers = append(peers, sp)
+			log.Info("#### connected peer:", common.BytesToHexString(pid[:]))
 		})
+		log.Info("####################################")
 		msg.reply <- peers
 
 	case dumpPeersInfoMsg:

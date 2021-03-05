@@ -81,12 +81,17 @@ func (h *DPOSOnDutyHandler) getActiveArbitersCount() int {
 	peers := h.cfg.Network.GetActivePeers()
 
 	peersMap := make(map[string]struct{})
+	log.Info("############################")
+	log.Info("#### getActiveArbitersCount")
 	for _, p := range peers {
 		pid := p.PID()
 		if h.cfg.Arbitrators.IsActiveProducer(pid[:]) && h.cfg.Arbitrators.IsArbitrator(pid[:]) {
 			peersMap[common.BytesToHexString(pid[:])] = struct{}{}
+			log.Info("#### peer:", common.BytesToHexString(pid[:]))
 		}
 	}
+	log.Info("#### count:", len(peersMap)+1)
+	log.Info("############################")
 
 	return len(peersMap) + 1
 }
