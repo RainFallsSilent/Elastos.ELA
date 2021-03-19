@@ -977,7 +977,7 @@ func (p *Peer) Disconnect() {
 func (p *Peer) handleRemoteVersionMsg(msg *msg.Version) error {
 	// Detect self connections.
 	if p.cfg.IsSelfConnection(p.na.IP, int(msg.Port), msg.Nonce) {
-		return errors.New("disconnecting peer connected to self")
+		return errors.New(fmt.Sprintf("disconnecting peer connected to self, nonce:%d, port:%d", msg.Nonce, msg.Port))
 	}
 
 	// Updating a bunch of stats including block based stats, and the

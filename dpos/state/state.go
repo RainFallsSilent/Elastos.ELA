@@ -2035,7 +2035,9 @@ func (s *State) tryUpdateInactivityV2(key string, producer *Producer,
 		}
 	} else {
 		producer.inactiveCount++
+		log.Info("##### producer", producer.info.NickName, "inactiveCount:", producer.inactiveCount, "at height:", height)
 		if producer.inactiveCount >= s.chainParams.MaxInactiveRounds {
+			log.Info("##### producer", producer.info.NickName, "inactive at height:", height)
 			s.setInactiveProducer(producer, key, height, false)
 			producer.inactiveCount = 0
 		}

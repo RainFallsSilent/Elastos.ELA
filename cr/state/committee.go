@@ -1475,8 +1475,14 @@ func (c *Committee) TryUpdateCRMemberInactivity(did common.Uint168,
 		}
 
 		crMember.InactiveCount++
+		if crMember.Info.NickName == "cr_545" {
+			log.Info("###### cr_545 inactiveCount:", crMember.InactiveCount, "at height:", height)
+		}
 		if crMember.InactiveCount >= c.params.MaxInactiveRounds &&
 			crMember.MemberState == MemberElected {
+			if crMember.Info.NickName == "cr_545" {
+				log.Info("###### cr_545 inactive at height:", height)
+			}
 			log.Info("at height", height, crMember.Info.NickName,
 				"changed to inactive", "InactiveCount:", crMember.InactiveCount,
 				"MaxInactiveRounds:", c.params.MaxInactiveRounds)
