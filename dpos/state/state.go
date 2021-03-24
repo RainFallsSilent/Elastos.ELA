@@ -1103,6 +1103,9 @@ func (s *State) activateProducer(p *payload.ActivateProducer, height uint32) {
 	})
 }
 
+var OutputCount int
+var OutputSize int
+
 // processVotes takes a transaction, if the transaction including any vote
 // inputs or outputs, validate and update producers votes.
 func (s *State) processVotes(tx *types.Transaction, height uint32) {
@@ -1112,6 +1115,14 @@ func (s *State) processVotes(tx *types.Transaction, height uint32) {
 			if output.Type != types.OTVote {
 				continue
 			}
+			OutputCount++
+			buf := new(bytes.Buffer)
+			output.Serialize(buf, tx.Version)
+			OutputSize += len(buf.Bytes())
+			if height >= 865500 {
+				log.Info("############# OutputCount:", OutputCount, "OutputSize:", OutputSize, "at height:", height)
+			}
+
 			p, _ := output.Payload.(*outputpayload.VoteOutput)
 			if p.Version == outputpayload.VoteProducerVersion {
 				op := types.NewOutPoint(tx.Hash(), uint16(i))
