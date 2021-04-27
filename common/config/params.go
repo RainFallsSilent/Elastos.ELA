@@ -385,9 +385,7 @@ func (p *Params) RegNet() *Params {
 	copy.CRCOnlyDPOSHeight = 211000
 	copy.PublicDPOSHeight = 231500
 	copy.CRVotingStartHeight = 292000
-	copy.CRCommitteeStartHeight = 442000
 	copy.CRClaimDPOSNodeStartHeight = 532650
-	copy.CRClaimDPOSNodePeriod = 720
 	copy.CRCProposalV1Height = 530000
 	copy.NewP2PProtocolVersionHeight = 531030
 	copy.CRAssetsRectifyTransactionHeight = 532650
@@ -404,22 +402,25 @@ func (p *Params) RegNet() *Params {
 	copy.MaxNodePerHost = 10
 	copy.CheckVoteCRCountHeight = 435000
 	copy.MaxCRAssetsAddressUTXOCount = 1440
-	copy.ChangeCommitteeNewCRHeight = 706240
+	copy.ChangeCommitteeNewCRHeight = 692477 //706240 // 691127+(24+21)/24*720
 	copy.CRCProposalDraftDataStartHeight = 2000000
-	copy.CustomIDProposalStartHeight = 706240
+	copy.CustomIDProposalStartHeight = 692477
 	copy.IllegalPenalty = 0
 	copy.InactivePenalty = 0
-	copy.NoCRCDPOSNodeHeight = 706240
+	copy.NoCRCDPOSNodeHeight = 692477
 	copy.RandomCandidatePeriod = 36 * 10
 	copy.MaxInactiveRoundsOfRandomNode = 36 * 8
 	copy.DPOSNodeCrossChainHeight = 2000000
 	copy.MaxReservedCustomIDLength = 255
 	copy.RevertToPOWNoBlockTime = 12 * 3600
 	copy.StopConfirmBlockTime = 11 * 3600
-	copy.RevertToPOWStartHeight = 706240
+	copy.RevertToPOWStartHeight = 692477
 	copy.HalvingRewardHeight = 801240    //690360 + 154 * 720
 	copy.HalvingRewardInterval = 1051200 //4 * 365 * 720
-	copy.NewELAIssuanceHeight = 691740   //690300 + 720 * 2
+	copy.NewELAIssuanceHeight = 691637   // 691127 + 17/24 * 720
+	copy.CRCommitteeStartHeight = 442000
+	copy.CRDutyPeriod = 249697 //691127 - 442000 + 570
+	copy.CRClaimDPOSNodePeriod = 720
 
 	return &copy
 }
