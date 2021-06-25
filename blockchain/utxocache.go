@@ -1,7 +1,7 @@
 // Copyright (c) 2017-2020 The Elastos Foundation
 // Use of this source code is governed by an MIT
 // license that can be found in the LICENSE file.
-// 
+//
 
 package blockchain
 
@@ -17,6 +17,7 @@ import (
 
 const (
 	memoryFirstReferenceSize = 5000
+	maxPerTransactionSize = 200*1024
 )
 
 var (
@@ -34,6 +35,15 @@ type UTXOCache struct {
 	inputs    *list.List
 	reference map[types.Input]types.Output
 	txCache   map[common.Uint256]*types.Transaction
+	size      int
+}
+
+func (up *UTXOCache) GetSize() int {
+	return up.size
+}
+
+func (up *UTXOCache) GetCount() int {
+	return len(up.txCache)
 }
 
 func (up *UTXOCache) insertReference(input *types.Input, output *types.Output) {
@@ -84,6 +94,10 @@ func (up *UTXOCache) GetTransaction(txID common.Uint256) (*types.Transaction, er
 }
 
 func (up *UTXOCache) insertTransaction(txID common.Uint256, tx *types.Transaction) {
+	if tx.GetSize() > maxPerTransactionSize {
+		return
+	}
+
 	if len(up.txCache) > maxReferenceSize {
 		for k := range up.txCache {
 			delete(up.txCache, k)
@@ -95,6 +109,7 @@ func (up *UTXOCache) insertTransaction(txID common.Uint256, tx *types.Transactio
 	}
 
 	up.txCache[txID] = tx
+	up.size += tx.GetSize()
 }
 
 func (up *UTXOCache) getTransaction(txID common.Uint256) (*types.Transaction, error) {
@@ -105,7 +120,9 @@ func (up *UTXOCache) getTransaction(txID common.Uint256) (*types.Transaction, er
 		if err != nil {
 			return nil, errors.New("transaction not found, " + err.Error())
 		}
-		up.insertTransaction(txID, prevTx)
+		if prevTx.GetSize() <= maxPerTransactionSize {
+			up.insertTransaction(txID, prevTx)
+		}
 	}
 
 	return prevTx, nil

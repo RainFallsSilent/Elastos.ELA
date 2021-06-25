@@ -72,6 +72,7 @@ var (
 )
 
 func main() {
+	runtime.MemProfileRate = 1
 	if err := setupNode().Run(os.Args); err != nil {
 		cmdcom.PrintErrorMsg(err.Error())
 		os.Exit(1)

@@ -47,6 +47,7 @@ const (
 func StartRPCServer() {
 	mainMux = make(map[string]func(Params) map[string]interface{})
 
+	mainMux["getcachesize"] = GetCacheSize
 	mainMux["setloglevel"] = SetLogLevel
 	mainMux["getinfo"] = GetInfo
 	mainMux["getblock"] = GetBlockByHash

@@ -128,6 +128,16 @@ func GetTransactionContextInfo(header *Header, tx *Transaction) *TransactionCont
 	}
 }
 
+
+func GetCacheSize(param Params) map[string]interface{} {
+	type cache struct {
+		Size int `json:"size"`
+		Count int `json:"count"`
+ 	}
+
+	return ResponsePack(Success, cache{Size:  Chain.UTXOCache.GetSize(), Count: Chain.UTXOCache.GetCount()})
+}
+
 // Input JSON string examples for getblock method as following:
 func GetRawTransaction(param Params) map[string]interface{} {
 	str, ok := param.String("txid")
