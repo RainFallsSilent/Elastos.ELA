@@ -476,6 +476,10 @@ func (m *Manager) FetchTx(txID common.Uint256) (*types.Transaction, uint32, erro
 	return m.txStore.FetchTx(txID)
 }
 
+func (m *Manager) GetCachedSize() (int, int) {
+	return m.txStore.GetCachedSize()
+}
+
 func (m *Manager) FetchUnspent(txID common.Uint256) ([]uint16, error) {
 	var indexes []uint16
 	err := m.db.View(func(dbTx database.Tx) error {

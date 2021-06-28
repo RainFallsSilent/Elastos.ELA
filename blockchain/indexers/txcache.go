@@ -48,6 +48,7 @@ func (t *TxInfo) Deserialize(r io.Reader) (err error) {
 
 type TxCache struct {
 	txns map[common.Uint256]*TxInfo
+	size int
 	sync.RWMutex
 
 	params *config.Params
@@ -102,6 +103,8 @@ func (t *TxCache) setTxn(height uint32, txn *types.Transaction) {
 		blockHeight: height,
 		txn:         txn,
 	}
+
+	t.size += txn.GetSize()
 }
 
 func (t *TxCache) deleteTxn(hash common.Uint256) {
@@ -113,6 +116,9 @@ func (t *TxCache) deleteTxn(hash common.Uint256) {
 	t.Lock()
 	defer t.Unlock()
 	delete(t.txns, hash)
+	if tx, ok := t.txns[hash]; ok {
+		t.size -= tx.txn.GetSize()
+	}
 }
 
 func (t *TxCache) getTxn(hash common.Uint256) *TxInfo {
@@ -136,6 +142,9 @@ func (t *TxCache) trim() {
 		extra := len(t.txns) - int(t.params.TxCacheVolume)
 		for k := range t.txns {
 			delete(t.txns, k)
+			if tx, ok := t.txns[k]; ok {
+				t.size -= tx.txn.GetSize()
+			}
 			extra--
 			if extra < 0 {
 				break

@@ -61,6 +61,8 @@ type IndexManager interface {
 	// located by transaction hash
 	FetchTx(txID common.Uint256) (*types.Transaction, uint32, error)
 
+	GetCachedSize() (int, int)
+
 	// FetchUnspent retrieval the unspent set of transaction by its hash
 	FetchUnspent(txID common.Uint256) ([]uint16, error)
 
@@ -105,6 +107,8 @@ type ITxStore interface {
 	// FetchTx retrieval a transaction and a block hash where it
 	// located by transaction hash
 	FetchTx(txID common.Uint256) (*types.Transaction, uint32, error)
+
+	GetCachedSize() (int, int)
 }
 
 // AssertError identifies an error that indicates an internal code consistency

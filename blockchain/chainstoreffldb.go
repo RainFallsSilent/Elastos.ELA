@@ -454,6 +454,10 @@ func (c *ChainStoreFFLDB) GetTransaction(txID Uint256) (*Transaction, uint32, er
 	return c.indexManager.FetchTx(txID)
 }
 
+func (c *ChainStoreFFLDB) GetCachedSize() (int, int) {
+	return c.indexManager.GetCachedSize()
+}
+
 func (c *ChainStoreFFLDB) InitIndex(chain indexers.IChain, interrupt <-chan struct{}) error {
 	return c.indexManager.Init(chain, interrupt)
 }

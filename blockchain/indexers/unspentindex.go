@@ -241,6 +241,10 @@ func (idx *UnspentIndex) DisconnectBlock(dbTx database.Tx, block *types.Block) e
 	return nil
 }
 
+func (idx *UnspentIndex) GetCachedSize() (int, int) {
+	return idx.txCache.size, len(idx.txCache.txns)
+}
+
 func (idx *UnspentIndex) FetchTx(txID common.Uint256) (*types.Transaction, uint32, error) {
 	if txnInfo := idx.txCache.getTxn(txID); txnInfo != nil {
 		return txnInfo.txn, txnInfo.blockHeight, nil

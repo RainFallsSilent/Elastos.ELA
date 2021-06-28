@@ -133,6 +133,7 @@ func (up *UTXOCache) CleanTxCache() {
 	defer up.Unlock()
 
 	up.txCache = make(map[common.Uint256]*types.Transaction)
+	up.size = 0
 }
 
 func (up *UTXOCache) CleanCache() {

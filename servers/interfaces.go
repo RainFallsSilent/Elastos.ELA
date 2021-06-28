@@ -135,7 +135,8 @@ func GetCacheSize(param Params) map[string]interface{} {
 		Count int `json:"count"`
  	}
 
-	return ResponsePack(Success, cache{Size:  Chain.UTXOCache.GetSize(), Count: Chain.UTXOCache.GetCount()})
+ 	size, count := Chain.GetDB().GetFFLDB().GetCachedSize()
+	return ResponsePack(Success, cache{Size:  size, Count: count})
 }
 
 // Input JSON string examples for getblock method as following:

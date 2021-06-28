@@ -81,6 +81,8 @@ type IFFLDBChainStore interface {
 	// Get a transaction by transaction hash.
 	GetTransaction(txID Uint256) (*Transaction, uint32, error)
 
+	GetCachedSize() (int, int)
+
 	// InitIndex use to initialize the index manager.
 	InitIndex(chain indexers.IChain, interrupt <-chan struct{}) error
 
