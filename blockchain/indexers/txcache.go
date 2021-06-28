@@ -17,6 +17,7 @@ import (
 const (
 	// TrimmingInterval is the interval number for each cache trimming.
 	TrimmingInterval = 10000
+	maxPerTransactionSize = 200*1024
 )
 
 type TxInfo struct {
@@ -97,6 +98,11 @@ func (t *TxCache) setTxn(height uint32, txn *types.Transaction) {
 		return
 	}
 
+	size := txn.GetSize()
+	if size > maxPerTransactionSize {
+		return
+	}
+
 	t.Lock()
 	defer t.Unlock()
 	t.txns[txn.Hash()] = &TxInfo{
@@ -104,7 +110,7 @@ func (t *TxCache) setTxn(height uint32, txn *types.Transaction) {
 		txn:         txn,
 	}
 
-	t.size += txn.GetSize()
+	t.size += size
 }
 
 func (t *TxCache) deleteTxn(hash common.Uint256) {
