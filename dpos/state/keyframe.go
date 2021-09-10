@@ -233,7 +233,7 @@ func (s *StateKeyFrame) Deserialize(r io.Reader) (err error) {
 	if err = common.ReadElements(r, &s.VersionStartHeight, &s.VersionEndHeight,
 		&s.LastRandomCandidateHeight, &s.DPOSWorkHeight, &consensusAlgorithm,
 		&s.LastBlockTimestamp, s.NeedRevertToDPOSTX,
-		&s.NeedNextTurnDPOSInfo, &s.NoProducers, s.NoClaimDPOSNode,
+		&s.NeedNextTurnDPOSInfo, &s.NoProducers, &s.NoClaimDPOSNode,
 		&s.RevertToPOWBlockHeight, &s.LastIrreversibleHeight,
 		&s.DPOSStartHeight); err != nil {
 		log.Error("##### err22:", err)
