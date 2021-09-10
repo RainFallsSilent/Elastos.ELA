@@ -236,6 +236,7 @@ func (s *StateKeyFrame) Deserialize(r io.Reader) (err error) {
 		&s.NeedNextTurnDPOSInfo, &s.NoProducers, s.NoClaimDPOSNode,
 		&s.RevertToPOWBlockHeight, &s.LastIrreversibleHeight,
 		&s.DPOSStartHeight); err != nil {
+		log.Error("##### err22:", err)
 		return err
 	}
 

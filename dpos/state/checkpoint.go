@@ -285,74 +285,92 @@ func (c *CheckPoint) serializeIllegalPayloadHashesMap(w io.Writer,
 // Deserialize read data to reader
 func (c *CheckPoint) Deserialize(r io.Reader) (err error) {
 	if c.Height, err = common.ReadUint32(r); err != nil {
+		log.Error("##### err1:", err)
 		return
 	}
 
 	var dutyIndex uint32
 	if dutyIndex, err = common.ReadUint32(r); err != nil {
+		log.Error("##### err2:", err)
 		return
 	}
 	c.DutyIndex = int(dutyIndex)
 
 	if c.CurrentArbitrators, err = c.readArbiters(r); err != nil {
+		log.Error("##### err3:", err)
 		return
 	}
 
 	if c.CurrentCandidates, err = c.readArbiters(r); err != nil {
+		log.Error("##### err4:", err)
 		return
 	}
 
 	if c.NextArbitrators, err = c.readArbiters(r); err != nil {
+		log.Error("##### err5:", err)
 		return
 	}
 
 	if c.NextCandidates, err = c.readArbiters(r); err != nil {
+		log.Error("##### err6:", err)
 		return
 	}
 
 	if err = c.CurrentReward.Deserialize(r); err != nil {
+		log.Error("##### err7:", err)
 		return
 	}
 
 	if err = c.NextReward.Deserialize(r); err != nil {
+		log.Error("##### err8:", err)
 		return
 	}
 
 	if c.CurrentCRCArbitersMap, err = c.deserializeCRCArbitersMap(r); err != nil {
+		log.Error("##### err9:", err)
 		return
 	}
 	if c.NextCRCArbitersMap, err = c.deserializeCRCArbitersMap(r); err != nil {
+		log.Error("##### err10:", err)
 		return
 	}
 	if c.NextCRCArbiters, err = c.readArbiters(r); err != nil {
+		log.Error("##### err11:", err)
 		return
 	}
 
 	if c.crcChangedHeight, err = common.ReadUint32(r); err != nil {
+		log.Error("##### err12:", err)
 		return
 	}
 
 	if err = c.accumulativeReward.Deserialize(r); err != nil {
+		log.Error("##### err13:", err)
 		return
 	}
 
 	if err = c.finalRoundChange.Deserialize(r); err != nil {
+		log.Error("##### err14:", err)
 		return
 	}
 
 	if c.clearingHeight, err = common.ReadUint32(r); err != nil {
+		log.Error("##### err15:", err)
 		return
 	}
 
 	if c.arbitersRoundReward, err = c.deserializeRoundRewardMap(r); err != nil {
+		log.Error("##### err16:", err)
 		return
 	}
 
 	c.illegalBlocksPayloadHashes, err = c.deserializeIllegalPayloadHashes(r)
 	if err != nil {
+		log.Error("##### err17:", err)
 		return
 	}
 	if err = common.ReadElement(r, &c.forceChanged); err != nil {
+		log.Error("##### err18:", err)
 		return
 	}
 	return c.StateKeyFrame.Deserialize(r)
