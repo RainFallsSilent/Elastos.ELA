@@ -155,7 +155,7 @@ func (s *StateKeyFrame) Serialize(w io.Writer) (err error) {
 	if err = common.WriteVarString(w, s.LastRandomCandidateOwner); err != nil {
 		return
 	}
-	log.Info("########## LastRandomCandidateOwner:", s.LastRandomCandidateOwner)
+	log.Info("########## serialize LastRandomCandidateOwner:", s.LastRandomCandidateOwner)
 
 	if err = common.WriteElements(w, s.VersionStartHeight, s.VersionEndHeight,
 		s.LastRandomCandidateHeight, s.DPOSWorkHeight, uint8(s.ConsensusAlgorithm),
@@ -234,7 +234,7 @@ func (s *StateKeyFrame) Deserialize(r io.Reader) (err error) {
 	log.Info("########## LastRandomCandidateOwner:", s.LastRandomCandidateOwner)
 	if err = common.ReadElements(r, &s.VersionStartHeight, &s.VersionEndHeight,
 		&s.LastRandomCandidateHeight, &s.DPOSWorkHeight, &consensusAlgorithm,
-		&s.LastBlockTimestamp, s.NeedRevertToDPOSTX,
+		&s.LastBlockTimestamp, &s.NeedRevertToDPOSTX,
 		&s.NeedNextTurnDPOSInfo, &s.NoProducers, &s.NoClaimDPOSNode,
 		&s.RevertToPOWBlockHeight, &s.LastIrreversibleHeight,
 		&s.DPOSStartHeight); err != nil {

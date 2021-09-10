@@ -106,6 +106,8 @@ func (c *CheckPoint) Snapshot() checkpoint.ICheckPoint {
 		c.LogError(err)
 		return nil
 	}
+
+
 	result := &CheckPoint{}
 	if err := result.Deserialize(buf); err != nil {
 		c.LogError(err)
