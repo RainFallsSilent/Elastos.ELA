@@ -448,8 +448,7 @@ func (b *BlockChain) checkVoteOutputs(
 		programHashes[output.ProgramHash] = struct{}{}
 	}
 
-	var dposV2OutputCount int
-	var dposV2OutputLock uint32
+	var minDPoSV2OutputLock uint32
 	var totalDPoSV2OutputVotes common.Fixed64
 	for _, o := range outputs {
 		if o.Type != OTVote && o.Type != OTDposV2Vote {
@@ -498,8 +497,9 @@ func (b *BlockChain) checkVoteOutputs(
 					return err
 				}
 			case outputpayload.DposV2:
-				dposV2OutputCount++
-				dposV2OutputLock = o.OutputLock
+				if minDPoSV2OutputLock == 0 || minDPoSV2OutputLock > o.OutputLock {
+					minDPoSV2OutputLock = o.OutputLock
+				}
 				totalDPoSV2OutputVotes += o.Value
 				err := b.checkVoteDposV2Content(o.OutputLock,
 					content, pds2, votePayload.Version, o.Value)
@@ -511,12 +511,10 @@ func (b *BlockChain) checkVoteOutputs(
 	}
 
 	// If inputs contain DPoS v2 votes, need to check:
-	// 1.need to be only one DPoS V2 input
-	// 2.need to be only one DPoS V2 output
-	// 3.outputLock of output need to be bigger than new input
-	// 4.DPoS v2 votes in outputs need to be more than inputs
-	var dposV2InputCount uint32
-	var dposV2InputLock uint32
+	// 1.need to be only one candidate in one output
+	// 2.outputLock of output need to be bigger than new input
+	// 3.DPoS v2 votes in outputs need to be more than inputs
+	var maxdposV2InputLock uint32
 	var totalDPoSV2InputVotes common.Fixed64
 	for _, o := range references {
 		votePayload, ok := o.Payload.(*outputpayload.VoteOutput)
@@ -535,23 +533,16 @@ func (b *BlockChain) checkVoteOutputs(
 			continue
 		}
 
-		dposV2InputCount++
-		dposV2InputLock = o.OutputLock
+		if maxdposV2InputLock < o.OutputLock {
+			maxdposV2InputLock = o.OutputLock
+		}
 		totalDPoSV2InputVotes += o.Value
 	}
-	// need to be only one DPoS V2 input
-	if dposV2InputCount > 1 {
-		return errors.New("need to be only one DPoS V2 input")
-	}
-	// need to be only one DPoS V2 output
-	if dposV2OutputCount > 1 {
-		return errors.New("need to be only one DPoS V2 output")
-	}
 	// outputLock of output need to be bigger than new input
-	if dposV2InputLock > dposV2OutputLock {
+	if minDPoSV2OutputLock < maxdposV2InputLock {
 		return errors.New(fmt.Sprintf("invalid DPoS V2 output lock, "+
-			"need to be bigger than input, input lockTime:%d, "+
-			"output lockTime:%d", dposV2InputLock, dposV2OutputLock))
+			"need to be bigger than input, max input lockTime:%d, "+
+			"min output lockTime:%d", maxdposV2InputLock, minDPoSV2OutputLock))
 	}
 	// DPoS v2 votes in outputs need to be more than inputs
 	if totalDPoSV2InputVotes > totalDPoSV2OutputVotes {
@@ -636,6 +627,10 @@ func (b *BlockChain) checkVoteDposV2Content(lockTime uint32, content outputpaylo
 		return errors.New("total votes larger than output amount")
 	}
 
+	// one output should vote one DPoS2.0 node only
+	if len(content.CandidateVotes) != 1 {
+		return errors.New("one output should vote one DPoS2.0 node only")
+	}
 	return nil
 }
 
