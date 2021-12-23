@@ -3096,6 +3096,10 @@ func getPayloadInfo(p interfaces.Payload, payloadVersion byte) PayloadInfo {
 			Hash:         common.ToReversedString(object.CompareEvidence.BlockHash()),
 		}
 		return obj
+
+	case *payload.ExchangeVotes:
+		obj := new(ExchangeVoteInfo)
+		obj.ExchangeValue = object.ExchangeValue.String()
 	}
 	return nil
 }

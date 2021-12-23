@@ -16,7 +16,7 @@ const TlsPort = 443
 
 type AttributeInfo struct {
 	Usage common2.AttributeUsage `json:"usage"`
-	Data  string         `json:"data"`
+	Data  string                 `json:"data"`
 }
 
 type InputInfo struct {
@@ -521,4 +521,8 @@ type RsInfo struct {
 	TxHash          string         `json:"txhash"`
 	Height          uint32         `json:"height"`
 	EffectiveHeight uint32         `json:"effectiveheight"`
+}
+
+type ExchangeVoteInfo struct {
+	ExchangeValue string `json:"exchangevalue"`
 }
