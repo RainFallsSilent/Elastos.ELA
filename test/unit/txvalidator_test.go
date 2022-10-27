@@ -7463,7 +7463,7 @@ func (s *txValidatorTestSuite) TestCreateCRClaimDposV2Transaction() {
 	s.EqualError(err.(errors.ELAError).InnerError(), "no reward to claim for such address")
 
 	bc := s.Chain
-	bc.GetState().DposV2RewardInfo["ERyUmNH51roR9qfru37Kqkaok2NghR7L5U"] = 100
+	bc.GetState().DPoSV2RewardInfo["ERyUmNH51roR9qfru37Kqkaok2NghR7L5U"] = 100
 	tx.DefaultChecker.SetParameters(&transaction.TransactionParameters{
 		BlockChain:  bc,
 		Config:      param,
@@ -7474,7 +7474,7 @@ func (s *txValidatorTestSuite) TestCreateCRClaimDposV2Transaction() {
 	s.EqualError(err.(errors.ELAError).InnerError(), "claim reward exceeded , max claim reward 0.00000100")
 
 	bc = s.Chain
-	bc.GetState().DposV2RewardInfo["ERyUmNH51roR9qfru37Kqkaok2NghR7L5U"] = 10000000000
+	bc.GetState().DPoSV2RewardInfo["ERyUmNH51roR9qfru37Kqkaok2NghR7L5U"] = 10000000000
 	tx.DefaultChecker.SetParameters(&transaction.TransactionParameters{
 		BlockChain:  bc,
 		Config:      param,
@@ -7671,7 +7671,7 @@ func (s *txValidatorTestSuite) TestArbitersAccumulateReward() {
 					StateKeyFrame: &state.StateKeyFrame{
 						DposV2EffectedProducers: tt.fields.dposV2EffectedProducers,
 						NodeOwnerKeys:           make(map[string]string),
-						DposV2RewardInfo:        make(map[string]common.Fixed64),
+						DPoSV2RewardInfo:        make(map[string]common.Fixed64),
 						ActivityProducers:       make(map[string]*state.Producer),
 						DPoSV2ActiveHeight:      tt.fields.DposV2ActiveHeight,
 					},
@@ -7694,8 +7694,8 @@ func (s *txValidatorTestSuite) TestArbitersAccumulateReward() {
 			//CurrentCRCArbitersMap
 			a.AccumulateReward(tt.args.block, tt.args.confirm)
 			a.History.Commit(tt.args.block.Height)
-			if a.State.DposV2RewardInfo["ET54cpnGG4JHeRatvPij6hGV6zN18eVSSj"] != 102 {
-				t.Errorf("DposV2RewardInfo() addr %v, want %v", "ET54cpnGG4JHeRatvPij6hGV6zN18eVSSj", 102)
+			if a.State.DPoSV2RewardInfo["ET54cpnGG4JHeRatvPij6hGV6zN18eVSSj"] != 102 {
+				t.Errorf("DPoSV2RewardInfo() addr %v, want %v", "ET54cpnGG4JHeRatvPij6hGV6zN18eVSSj", 102)
 			}
 		})
 	}

@@ -874,6 +874,9 @@ type Params struct {
 
 	// CrossChainMonitorInterval indicates the interval value of cr cross chain arbitration
 	CrossChainMonitorInterval uint32
+
+	// NFTStartHeight defines the height of NFT started.
+	NFTStartHeight uint32
 }
 
 // RewardPerBlock calculates the reward for each block by a specified time
