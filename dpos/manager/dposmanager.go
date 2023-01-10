@@ -243,9 +243,9 @@ func (d *DPOSManager) OnProposalReceived(id dpeer.PID, p *payload.DPOSProposal) 
 	if !d.handler.ProcessProposal(id, p) {
 		pubKey := common.BytesToHexString(id[:])
 		d.notHandledProposal[pubKey] = struct{}{}
-		count := len(d.notHandledProposal)
+		//count := len(d.notHandledProposal)
 
-		if d.consensus.viewOffset != 0 && d.arbitrators.HasArbitersHalfMinorityCount(count) {
+		if d.consensus.viewOffset != 0 /*&& d.arbitrators.HasArbitersHalfMinorityCount(count) */{
 			log.Info("[OnProposalReceived] has minority not handled" +
 				" proposals, need recover")
 			if d.recoverAbnormalState() {

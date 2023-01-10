@@ -780,6 +780,8 @@ func (p *ProposalDispatcher) countAcceptedVote(v *payload.DPOSProposalVote) (
 
 		if p.cfg.Manager.GetArbitrators().HasArbitersMajorityCount(len(p.acceptVotes)) {
 			log.Info("Collect majority signs, finish proposal.")
+			log.Info("### test Collect majority signs, but not call finishProposal")
+			return true, false
 			return true, p.FinishProposal()
 		}
 		return true, false
