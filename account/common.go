@@ -7,7 +7,6 @@ package account
 
 import (
 	"encoding/hex"
-
 	"github.com/elastos/Elastos.ELA/common"
 	"github.com/elastos/Elastos.ELA/core/contract"
 	"github.com/elastos/Elastos.ELA/crypto"
@@ -25,6 +24,15 @@ const (
 var IDReverse, _ = hex.DecodeString("a3d0eaa466df74983b5d7c543de6904f4c9418ead5ffd6d25814234a96db37b0")
 var SystemAssetID, _ = common.Uint256FromBytes(common.BytesReverse(IDReverse))
 
+func getOwnerKeyCodeHash(ownerKey []byte) (ownKeyProgramHash *common.Uint160, err error) {
+	if len(ownerKey) == crypto.NegativeBigLength {
+		ownKeyProgramHash, err = contract.PublicKeyToStandardCodeHash(ownerKey)
+	} else {
+		return common.ToCodeHash(ownerKey), nil
+	}
+	return ownKeyProgramHash, err
+}
+
 func GetSigners(code []byte) ([]*common.Uint160, error) {
 	publicKeys, err := crypto.ParseMultisigScript(code)
 	if err != nil {
@@ -33,7 +41,7 @@ func GetSigners(code []byte) ([]*common.Uint160, error) {
 
 	var signers []*common.Uint160
 	for _, publicKey := range publicKeys {
-		hash, err := contract.PublicKeyToStandardCodeHash(publicKey[1:])
+		hash, err := getOwnerKeyCodeHash(publicKey[1:])
 		if err != nil {
 			return nil, err
 		}
@@ -51,7 +59,7 @@ func GetCorssChainSigners(code []byte) ([]*common.Uint160, error) {
 
 	var signers []*common.Uint160
 	for _, publicKey := range publicKeys {
-		hash, err := contract.PublicKeyToStandardCodeHash(publicKey[1:])
+		hash, err := getOwnerKeyCodeHash(publicKey[1:])
 		if err != nil {
 			return nil, err
 		}
