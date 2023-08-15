@@ -405,12 +405,19 @@ func (b *BlockChain) createTransaction(pd interfaces.Payload, txType common.TxTy
 	}
 	txOutputs = append(txOutputs, changeOutputs...)
 
+	des := "BPoS Validator Incentive Program"
+	desData, _ := HexStringToBytes(des)
 	return functions.CreateTransaction(
 		common.TxVersion09,
 		txType,
 		0,
 		pd,
-		[]*common.Attribute{},
+		[]*common.Attribute{
+			&common.Attribute{
+				Usage: common.Memo,
+				Data:  desData,
+			},
+		},
 		txInputs,
 		txOutputs,
 		0,
