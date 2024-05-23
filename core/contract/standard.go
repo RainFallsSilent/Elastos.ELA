@@ -29,8 +29,31 @@ func CreateStandardRedeemScript(pubKey *crypto.PublicKey) ([]byte, error) {
 	return sb.ToArray(), nil
 }
 
+func CreateStandardRedeemScriptByPKBytes(pubKey []byte) ([]byte, error) {
+	if nil == pubKey {
+		return nil, errors.New("public Key is nil")
+	}
+	sb := program.NewProgramBuilder()
+	sb.PushData(pubKey)
+	sb.AddOp(vm.CHECKSIG)
+
+	return sb.ToArray(), nil
+}
+
 func CreateStandardContract(pubKey *crypto.PublicKey) (*Contract, error) {
 	redeemScript, err := CreateStandardRedeemScript(pubKey)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Contract{
+		Code:   redeemScript,
+		Prefix: PrefixStandard,
+	}, nil
+}
+
+func CreateStandardContractByPKBytes(pubKey[]byte) (*Contract, error) {
+	redeemScript, err := CreateStandardRedeemScriptByPKBytes(pubKey)
 	if err != nil {
 		return nil, err
 	}

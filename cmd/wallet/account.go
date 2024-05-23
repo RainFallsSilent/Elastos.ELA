@@ -285,9 +285,9 @@ func importAccount(c *cli.Context) error {
 		cmdcom.PrintErrorMsg("Missing argument. PrivateKey hex expected.")
 		cli.ShowCommandHelpAndExit(c, "import", 1)
 	}
-	privateKeyHex := c.Args().First()
+	keyHex := c.Args().First()
 
-	privateKeyBytes, err := hex.DecodeString(privateKeyHex)
+	keyBytes, err := hex.DecodeString(keyHex)
 	if err != nil {
 		return err
 	}
@@ -319,8 +319,21 @@ func importAccount(c *cli.Context) error {
 			return err
 		}
 	}
+	fmt.Println("Importing account..., len(keyBytes):", len(keyBytes))
+	if len(keyBytes) == 33 {
+		acc, err := account.NewAccountWithPublicKey(keyBytes)
+		if err != nil {
+			return err
+		}
+		if err := client.SaveAccount(acc); err != nil {
+			return err
+		}
+		fmt.Println("Public key imported.")
 
-	acc, err := account.NewAccountWithPrivateKey(privateKeyBytes)
+		return ShowAccountInfo(client)
+	}
+
+	acc, err := account.NewAccountWithPrivateKey(keyBytes)
 	if err != nil {
 		return err
 	}

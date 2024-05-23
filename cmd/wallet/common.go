@@ -59,6 +59,8 @@ func ShowAccountInfo(client *account.Client) error {
 			if err != nil {
 				return err
 			}
+		} else {
+			publicKey = acc.CompressedPublicKey
 		}
 		addr, err := acc.ProgramHash.ToAddress()
 		if err != nil {

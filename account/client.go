@@ -296,16 +296,20 @@ func (cl *Client) SaveAccount(ac *Account) error {
 	cl.accounts[ac.ProgramHash.ToCodeHash()] = ac
 
 	decryptedPrivateKey := make([]byte, 96)
-	temp, err := ac.PublicKey.EncodePoint(false)
-	if err != nil {
-		return err
+
+	if ac.PublicKey != nil {
+		temp, err := ac.PublicKey.EncodePoint(false)
+		if err != nil {
+			return err
+		}
+		for i := 1; i <= 64; i++ {
+			decryptedPrivateKey[i-1] = temp[i]
+		}
+		for i := len(ac.PrivKey()) - 1; i >= 0; i-- {
+			decryptedPrivateKey[96+i-len(ac.PrivKey())] = ac.PrivKey()[i]
+		}
 	}
-	for i := 1; i <= 64; i++ {
-		decryptedPrivateKey[i-1] = temp[i]
-	}
-	for i := len(ac.PrivKey()) - 1; i >= 0; i-- {
-		decryptedPrivateKey[96+i-len(ac.PrivKey())] = ac.PrivKey()[i]
-	}
+
 	encryptedPrivateKey, err := cl.EncryptPrivateKey(decryptedPrivateKey)
 	if err != nil {
 		return err

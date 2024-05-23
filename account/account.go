@@ -24,11 +24,12 @@ With account, you can get the transfer address or sign transaction etc.
 */
 
 type Account struct {
-	PrivateKey   []byte
-	PublicKey    *crypto.PublicKey
-	ProgramHash  common.Uint168
-	RedeemScript []byte
-	Address      string
+	PrivateKey          []byte
+	PublicKey           *crypto.PublicKey
+	CompressedPublicKey []byte
+	ProgramHash         common.Uint168
+	RedeemScript        []byte
+	Address             string
 }
 
 type SchnorAccount struct {
@@ -90,6 +91,26 @@ func NewAccountWithPrivateKey(privateKey []byte) (*Account, error) {
 		ProgramHash:  *programHash,
 		RedeemScript: signatureContract.Code,
 		Address:      address,
+	}, nil
+}
+
+func NewAccountWithPublicKey(pk []byte) (*Account, error) {
+	signatureContract, err := contract.CreateStandardContractByPKBytes(pk)
+	if err != nil {
+		return nil, err
+	}
+	programHash := signatureContract.ToProgramHash()
+	address, err := programHash.ToAddress()
+	if err != nil {
+		return nil, err
+	}
+	return &Account{
+		PrivateKey:          []byte{},
+		PublicKey:           nil,
+		CompressedPublicKey: pk,
+		ProgramHash:         *programHash,
+		RedeemScript:        signatureContract.Code,
+		Address:             address,
 	}, nil
 }
 
