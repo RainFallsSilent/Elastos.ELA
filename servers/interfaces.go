@@ -1346,6 +1346,10 @@ func SendRawTransaction(param Params) map[string]interface{} {
 		return ResponsePack(InvalidTransaction, err.Error())
 	}
 
+	if txn.TxType() == common2.DposV2ClaimReward {
+		return ResponsePack(InvalidTransaction, "temp not support")
+	}
+
 	if err := VerifyAndSendTx(txn); err != nil {
 		return ResponsePack(InvalidTransaction, err.Error())
 	}
@@ -2561,10 +2565,10 @@ func DposV2RewardInfo(param Params) map[string]interface{} {
 	} else {
 		var result []RPCDposV2RewardInfo
 		dposV2RewardInfo := Chain.GetState().DPoSV2RewardInfo
-		for addr, _ := range dposV2RewardInfo {
+		for addr, value := range dposV2RewardInfo {
 			result = append(result, RPCDposV2RewardInfo{
 				Address:   addr,
-				Claimable: "0",
+				Claimable: value.String(),
 				Claiming:  Chain.GetState().DposV2RewardClaimingInfo[addr].String(),
 				Claimed:   Chain.GetState().DposV2RewardClaimedInfo[addr].String(),
 			})
