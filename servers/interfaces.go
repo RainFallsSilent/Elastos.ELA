@@ -2561,10 +2561,10 @@ func DposV2RewardInfo(param Params) map[string]interface{} {
 	} else {
 		var result []RPCDposV2RewardInfo
 		dposV2RewardInfo := Chain.GetState().DPoSV2RewardInfo
-		for addr, value := range dposV2RewardInfo {
+		for addr, _ := range dposV2RewardInfo {
 			result = append(result, RPCDposV2RewardInfo{
 				Address:   addr,
-				Claimable: value.String(),
+				Claimable: "0",
 				Claiming:  Chain.GetState().DposV2RewardClaimingInfo[addr].String(),
 				Claimed:   Chain.GetState().DposV2RewardClaimedInfo[addr].String(),
 			})
