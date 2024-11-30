@@ -1860,6 +1860,11 @@ func (b *BlockChain) ReorganizeChain2(block *Block) error {
 func (b *BlockChain) processBlock(block *Block, confirm *payload.Confirm) (bool, bool, error) {
 	blockHash := block.Hash()
 
+	if block.Hash().ReversedString() == "98dfa3d7fbb6cb3fc9aa7bbab56feac4e388d30e71d530e0be17efd9f224a96f" {
+		log.Info("#### reject processBlock: ", block.Header.Height, "hash: ", blockHash)
+		return false, false, fmt.Errorf("reject block 98dfa3d7fbb6cb3fc9aa7bbab56feac4e388d30e71d530e0be17efd9f224a96f")
+	}
+
 	log.Debugf("[ProcessBLock] height = %d, hash = %x", block.Header.Height, blockHash.Bytes())
 
 	// The block must not already exist in the main chain or side chains.
