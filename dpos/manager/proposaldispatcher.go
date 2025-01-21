@@ -137,10 +137,10 @@ func (p *ProposalDispatcher) StartProposal(b *types.Block) {
 	log.Info("[StartProposal] start")
 	defer log.Info("[StartProposal] end")
 
-	if p.processingBlock != nil {
-		log.Info("[StartProposal] start proposal failed")
-		return
-	}
+	// if p.processingBlock != nil {
+	// 	log.Info("[StartProposal] start proposal failed")
+	// 	return
+	// }
 	p.processingBlock = b
 
 	//p.cfg.Network.BroadcastMessage(dmsg.NewInventory(b.Hash()))
@@ -171,7 +171,10 @@ func (p *ProposalDispatcher) StartProposal(b *types.Block) {
 		Result:       false,
 	}
 	p.cfg.EventMonitor.OnProposalArrived(&proposalEvent)
+	log.Info("#### acceptProposal:", proposal.Hash(), "sponsor:", common.BytesToHexString(proposal.Sponsor))
 	p.acceptProposal(proposal)
+	// log.Info("#### rejectProposal:", proposal.Hash(), "sponsor:", common.BytesToHexString(proposal.Sponsor))
+	// p.rejectProposal(proposal)
 }
 
 func (p *ProposalDispatcher) TryStartSpeculatingProposal(b *types.Block) {

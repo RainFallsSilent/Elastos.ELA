@@ -65,12 +65,15 @@ func (h *DPOSOnDutyHandler) TryStartNewConsensus(b *types.Block) bool {
 
 	if h.consensus.IsReady() {
 		log.Info("[OnDuty][OnBlockReceived] received first unsigned block, start consensus")
+		log.Info("### [OnDuty][OnBlockReceived] start proposal 1, block hash:", b.Hash())
 		h.consensus.StartConsensus(b)
 		h.proposalDispatcher.StartProposal(b)
 		result = true
 	} else { //finished
 		log.Info("[OnDuty][OnBlockReceived] received unsigned block, record block")
 		h.consensus.ProcessBlock(b)
+		log.Info("### [OnDuty][OnBlockReceived] start proposal 2, block hash:", b.Hash())
+		h.proposalDispatcher.StartProposal(b)
 		result = false
 	}
 

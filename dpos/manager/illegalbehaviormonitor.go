@@ -239,13 +239,13 @@ func (i *IllegalBehaviorMonitor) ProcessIllegalVote(
 
 	firstEvidence, err := i.generateProposalEvidence(firstProposal)
 	if err != nil {
-		log.Warn("[ProcessIllegalProposal] generate evidence error: ", err)
+		log.Warn("[DPOSProposalVote] generate evidence error: ", err)
 		return
 	}
 
 	secondEvidence, err := i.generateProposalEvidence(secondProposal)
 	if err != nil {
-		log.Warn("[ProcessIllegalProposal] generate evidence error: ", err)
+		log.Warn("[DPOSProposalVote] generate evidence error: ", err)
 		return
 	}
 

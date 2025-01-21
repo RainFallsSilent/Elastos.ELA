@@ -6,14 +6,15 @@
 package settings
 
 import (
+	"path/filepath"
+	"strings"
+
 	"github.com/RainFallsSilent/screw"
 	"github.com/elastos/Elastos.ELA/common/config"
 	"github.com/elastos/Elastos.ELA/core/transaction"
 	"github.com/elastos/Elastos.ELA/core/types/functions"
 	"github.com/elastos/Elastos.ELA/elanet/pact"
 	"github.com/spf13/viper"
-	"path/filepath"
-	"strings"
 )
 
 type Settings struct {
@@ -86,8 +87,6 @@ func (s *Settings) SetupConfig(withScrew bool, about string, version string) *co
 
 	if conf.MaxTxPerBlock > 0 {
 		pact.MaxTxPerBlock = conf.MaxTxPerBlock
-	} else {
-		pact.MaxTxPerBlock = 10000
 	}
 
 	instantBlock := conf.PowConfiguration.InstantBlock
