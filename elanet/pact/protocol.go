@@ -39,7 +39,7 @@ var (
 	MaxBlockHeaderSize uint32 = 1000000
 
 	// MaxTxPerBlock is the maximux number of transactions allowed per block.
-	MaxTxPerBlock uint32 = 10000
+	MaxTxPerBlock uint32 = 10
 )
 
 // ServiceFlag identifies services supported by a peer.
